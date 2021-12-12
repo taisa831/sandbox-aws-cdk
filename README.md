@@ -12,3 +12,22 @@ about your experience through GitHub issues.
  * `cdk diff`        compare deployed stack with current state
  * `cdk synth`       emits the synthesized CloudFormation template
  * `go test`         run unit tests
+
+
+## Build
+
+```
+$ GOARCH=amd64 GOOS=linux go build -o bin/main lambda/main.go
+```
+
+## Deploy
+
+```
+$ cdk deploy --profile p
+```
+
+## Run
+
+```
+curl -X POST -H "Content-Type: application/json" -d '{"name":"world!"}' https://hd4t4cahyl.execute-api.ap-northeast-1.amazonaws.com/prod/hello
+```

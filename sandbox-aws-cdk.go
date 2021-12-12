@@ -2,9 +2,11 @@ package main
 
 import (
 	"github.com/aws/aws-cdk-go/awscdk/v2"
-	// "github.com/aws/aws-cdk-go/awscdk/v2/awssqs"
+	"github.com/aws/aws-cdk-go/awscdk/v2/awsapigateway"
+	"github.com/aws/aws-cdk-go/awscdk/v2/awslambda"
+	"github.com/aws/aws-cdk-go/awscdk/v2/awss3assets"
 	"github.com/aws/constructs-go/constructs/v10"
-	// "github.com/aws/jsii-runtime-go"
+	"github.com/aws/jsii-runtime-go"
 )
 
 type SandboxAwsCdkStackProps struct {
@@ -18,12 +20,17 @@ func NewSandboxAwsCdkStack(scope constructs.Construct, id string, props *Sandbox
 	}
 	stack := awscdk.NewStack(scope, &id, &sprops)
 
-	// The code that defines your stack goes here
+	lambdaFn := awslambda.NewFunction(stack, jsii.String("my-lambda-aws-cdk"), &awslambda.FunctionProps{
+		FunctionName: jsii.String("my-lambda-aws-cdk-func"),
+		Runtime:      awslambda.Runtime_GO_1_X(),
+		Code:         awslambda.AssetCode_FromAsset(jsii.String("handler"), &awss3assets.AssetOptions{}),
+		Handler:      jsii.String("main"),
+	})
 
-	// example resource
-	// queue := awssqs.NewQueue(stack, jsii.String("SandboxAwsCdkQueue"), &awssqs.QueueProps{
-	// 	VisibilityTimeout: awscdk.Duration_Seconds(jsii.Number(300)),
-	// })
+	apiGW := awsapigateway.NewRestApi(stack, jsii.String("my-api-gw-aws-cdk"), nil)
+	apiGW.Root().
+		AddResource(jsii.String("hello"), nil).
+		AddMethod(jsii.String("POST"), awsapigateway.NewLambdaIntegration(lambdaFn, nil), nil)
 
 	return stack
 }
